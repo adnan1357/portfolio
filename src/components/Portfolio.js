@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Code,
   Database,
@@ -10,12 +10,15 @@ import {
   Globe,
   Terminal,
   Layout,
-  Box  // Add this line
+  Box,  // Add this line
+  Menu,  // Add Menu icon
+  X       // Add X icon for close
 } from 'lucide-react';
 
 const Portfolio = () => {
   const [activeSection, setActiveSection] = useState('about');
-
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  
   const projects = [
     {
       title: "NHS Trust Integration System",
@@ -72,6 +75,28 @@ const Portfolio = () => {
     }
   };
 
+  const mobileMenuVariants = {
+    hidden: { 
+      opacity: 0, 
+      y: "-100%",
+      transition: {
+        duration: 0.3
+      }
+    },
+    visible: { 
+      opacity: 1, 
+      y: "0%",
+      transition: {
+        duration: 0.3
+      }
+    }
+  };
+
+  const handleSectionChange = (section) => {
+    setActiveSection(section);
+    setIsMobileMenuOpen(false);
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-gray-100 font-sans">
       <motion.header 
@@ -88,7 +113,9 @@ const Portfolio = () => {
             Adnan Habib
             <span className="block text-sm font-light text-gray-400 mt-1">Junior Integration Developer</span>
           </motion.h1>
-          <nav className="flex space-x-6">
+          
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex space-x-6">
             {['about', 'projects', 'experience', 'skills', 'education'].map(section => (
               <motion.button 
                 key={section}
@@ -105,7 +132,49 @@ const Portfolio = () => {
               </motion.button>
             ))}
           </nav>
+
+          {/* Mobile Hamburger Menu */}
+          <div className="md:hidden">
+            <motion.button 
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              className="text-purple-300 hover:text-purple-400"
+            >
+              {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </motion.button>
+          </div>
         </div>
+
+        {/* Mobile Menu Overlay */}
+        <AnimatePresence>
+          {isMobileMenuOpen && (
+            <motion.div 
+              initial="hidden"
+              animate="visible"
+              exit="hidden"
+              variants={mobileMenuVariants}
+              className="md:hidden absolute top-full left-0 w-full bg-black/90 backdrop-blur-lg z-50"
+            >
+              <nav className="flex flex-col items-center py-6 space-y-4">
+                {['about', 'projects', 'experience', 'skills', 'education'].map(section => (
+                  <motion.button 
+                    key={section}
+                    onClick={() => handleSectionChange(section)}
+                    className={`w-full py-3 text-center transition-all ${
+                      activeSection === section 
+                        ? 'bg-purple-500/20 text-purple-300' 
+                        : 'text-gray-300 hover:bg-purple-500/10'
+                    }`}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    {section.charAt(0).toUpperCase() + section.slice(1)}
+                  </motion.button>
+                ))}
+              </nav>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </motion.header>
 
       <div className="h-24"></div>
