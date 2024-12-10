@@ -6,7 +6,6 @@ import {
   Server,
   Cloud,
   GitBranch,
-  Lock,
   FileText,
   Globe,
   Terminal,
